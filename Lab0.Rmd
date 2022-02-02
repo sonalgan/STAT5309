@@ -1,0 +1,75 @@
+---
+title: "STAT 5309: Lab 0 - Sonal Ganvir"
+output: pdf_document
+---
+
+
+
+```{r}
+##Q1.a
+x.t <- rt(100, df=10)
+qqnorm(x.t)
+qqline(x.t)
+shapiro.test(x.t)
+```
+```{r}
+##Q1.b
+z1 <- rnorm(100)
+z2 <- rnorm(100)
+z3 <- rnorm(100)
+z4 <- rnorm(100)
+z5 <- rnorm(100)
+x.chisq <- z1^1 +z2^2 +z3^3+z4^2+z5^2
+qqnorm(x.chisq)
+qqline(x.chisq)
+shapiro.test(x.chisq)
+```
+```{r}
+##Q2.a&b
+sample <-c(26.4,23.5,25.4,22.9,25.2,39.2,25.5,31.9,26.0,44.6,35.5,38.6,
+30.1,31.0,30.8,32.8,47.7,39.1,55.3,50.7,73.8,71.1,68.4,77.1,
+19.4,19.3,18.7,19.0,23.2,21.3,23.2,19.9,18.9,19.8,19.6,21.9)
+mu <- mean(sample)
+sd <- sd(sample)
+print("Mean of sample:")
+print(mu)
+print("Standard Deviation of sample: ")
+print(sd)
+n<- length(sample)
+CI_upper <- mu + 1.96*(sd/sqrt(n))
+CI_lower <- mu -  1.96*(sd/sqrt(n))
+print("Confidence interval for mean:- Lower Bound: ")
+print(CI_lower)
+print("Upper Bound: ")
+print(CI_upper)
+ss=(n-1)*sd^2                        #Sum of square
+chi1=qchisq(p=.05, df=n-1, lower.tail=FALSE)    #Chi square critical value(left)
+chi2=qchisq(p=.05, df=n-1, lower.tail=TRUE)     #Chi square critical value(right)
+CI_sdLower <- sqrt(ss/chi1)
+CI_sdUpper <- sqrt(ss/chi2)
+print("Confidence interval for mean:- Lower Bound: ")
+print(CI_sdLower)
+print("Upper Bound: ")
+print(CI_sdUpper)
+```
+
+
+
+
+```{r}
+##Q3
+sample <-c(26.4,23.5,25.4,22.9,25.2,39.2,25.5,31.9,26.0,44.6,35.5,38.6,
+30.1,31.0,30.8,32.8,47.7,39.1,55.3,50.7,73.8,71.1,68.4,77.1,
+19.4,19.3,18.7,19.0,23.2,21.3,23.2,19.9,18.9,19.8,19.6,21.9)
+hist(sample)
+sample.s <- sort(sample)
+ranks <-rank(sample.s)
+n <- length(sample.s)
+p <- (ranks-0.5)/n
+z.quantile <- qqnorm(p)
+qqline(p)
+
+
+```
+
+
