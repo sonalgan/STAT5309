@@ -1,0 +1,203 @@
+---
+title: "STAT 5309- Lab 1"
+author: "Name: Sonal Ganvir "
+date: "Date: Feb 3, 2022"
+fontsize: 10pt
+output: pdf_document
+---
+```{r ,include=FALSE}
+library("BSDA")
+library("tidyverse")
+```
+
+## Problem 1
+### a.
+
+```{r}
+##Setup
+days = c(108,138,124,163,124,159,106,134,115,139)
+mu = mean(days)
+qqnorm(days,main="Normality") 
+qqline(days) 
+```
+
+As data points are fairly close to y=x slope, we can say population is normal.
+
+**Testing for mean**
+
+**Null hypothesis (H0) **: Average shelf life does not exceeds 120 days i.e. mu <= 120. <br />
+
+**Alternative hypothesis (Ha)**: mu > 120
+
+We will use one-tailed T-test for this.
+
+### b. 
+```{r}
+## Test Statistic
+alpha = 0.01
+t.test(days,mu = 120,alternative = "greater",conf.level = 1-alpha)
+```
+As p-value(0.054) is significantly greater than alpha (0.01), we fail to reject our null hypothesis and support our alternative hypothesis i.e. shelf life exceeds 120 days.
+
+### c.
+
+P-value for the above test= 0.054
+
+### d.
+
+99% confidence interval for the mean shelf life : 
+```{r}
+n=length(days)
+sd=sd(days)
+z_99 =qnorm(1-alpha, mean = 0, sd = 1, lower.tail = TRUE)
+CI_upper <- mu + z_99*(sd/sqrt(n))
+CI_lower <- mu -  z_99*(sd/sqrt(n))
+cat("Confidence interval for mean:- \nLower Bound: ",CI_lower,"Upper Bound: ",CI_upper)
+
+
+```
+
+***
+
+## Problem 2
+### a.
+
+```{r}
+## Experiment Setup
+m1 = c(16.03,16.04,16.05,16.05,16.02,16.01,15.96,15.98,16.02,15.99)
+m2 = c(16.02,15.97,15.96,16.01,15.99,16.03,16.04,16.02,16.01,16.00)
+data.2 <- data.frame(cbind(m1,m2))
+names(data.2) <- c("Machine1","Machine2")
+attach(data.2)
+print(data.2)
+
+
+```
+```{r}
+mu1<-mean(m1)
+mu2<-mean(m2)
+cat("Mean for machine 1: ",mu1,"\nMean for machine 2: ",mu2 )
+
+```
+
+**Assumption**: Given population is normal.
+
+**Comparing the means**
+
+**Null hypothesis (H0)**: There is no difference between average fill volumes for the two machines. i.e. mu1 = mu2 <br />
+
+**Alternative hypothesis (Ha)**: mu1 != mu2 
+
+As population variances are given and sample size is small (n<30), we will use two-tailed z-test for this setup.
+
+### b.
+```{r}
+## Test Statistic
+alpha= 0.05
+sigma1= 0.015
+sigma2= 0.018
+z.test(m1,m2,sigma.x=sigma1,sigma.y = sigma2,conf.level = 1-alpha)
+```
+
+As p-value(0.1771) is significantly greater than alpha(0.05), we fail to reject our null hypothesis and support our alternative hypothesis i.e. there is difference between the average fill volumes of the two machines.
+
+**Comparing the variances**
+
+**Null Hypothesis (H0):** There ratio of variances of the two fill volumes for the machines is equal to 1. i.e. sigma1^2 = sigma2^2
+
+**Alternative Hypothesis(H1):** sigma1^2 != sigma2^2
+```{r}
+var.test(m1,m2)
+```
+As p-value >> alpha(0.05), ratio of variances is equal to 1 i.e. the two populations have unequal variances.
+
+### c. 
+p-value for above test is 0.1771.
+
+### d.
+
+```{r}
+n1<-length(m1)
+n2<-length(m2)
+sd1<-sd(m1)
+sd2<-sd(m2)
+df <-  (n1+n2-2) 
+t <- qt(alpha, df, lower.tail=FALSE)
+sp<- ((n1-1)*sd1 + (n2-1)*sd2) / df               ##Pooled variance
+CI_lower <- (mu1-mu2)-(t*sqrt((sp/n1)+(sp/n2)))
+CI_upper <- (mu1-mu2)+ (t*sqrt((sp/n1)+(sp/n2)))
+cat("Confidence interval for difference of means:- \nLower Bound: ",CI_lower,"Upper Bound: ",CI_upper)
+
+
+```
+### e. 
+
+```{r}
+boxplot(data.2)
+means <- apply(data.2,2,mean)
+stripchart(data.2, xlab="Machines", vertical=TRUE,pch=16) 
+lines(means)
+```
+
+***
+
+## Problem 3
+
+
+```{r}
+##Experiment Setup
+t1<-c(65,81,57,66,82,82,67,59,75,70)
+t2<-c(64,71,83,59,65,56,69,74,82,79)
+data.3<- data.frame(cbind(t1,t2))
+names(data.3) <- c("Type 1","Type 2")
+attach(data.3)
+```
+
+```{r}
+print(data.3)
+cat("Mean for-> Type1 ",mean(t1)," Type 2: ",mean(t2),"\nVariance for-> Type1 ",var(t1)," Type 2: ",var(t2))
+```
+### c.
+```{r}
+##Test for Normality
+qqnorm(t1,main="Normality")
+qqline(t1)
+
+qqnorm(t2,main="Normality")
+qqline(t2)
+shapiro.test(t1)
+shapiro.test(t2)
+
+```
+As for both samples p-values >> 0.05, we can assume the two populations are normal.
+
+### a.
+**Comparing the variances**
+
+**Null Hypothesis (H0):** There ratio of variances of the two flare types is equal to 1. i.e. sigma1^2 = sigma2^2
+
+**Alternative Hypothesis(H1):** sigma1^2 != sigma2^2
+
+```{r}
+##Test Statistic
+alpha=0.05
+var.test(t1, t2, alternative = "two.sided",conf.level = 1-alpha)
+```
+As p-value for the above test is significantly greater than alpha (0.05), we can reject our null hypothesis and accept our alternative hypothesis i.e. the two variances of the flare types are not equal.
+
+### b.
+
+**Comparing the means**
+
+**Null hypothesis (H0):** There is no difference between the average burning times the two flare types i.e. mu1 = mu2
+
+**Alternative Hypothesis (Ha):** mu1 != mu2
+```{r}
+#Test Statistic
+alpha=0.05
+t.test(t1,t2, var.equal=FALSE,conf.level = 1-alpha)
+```
+As p-value for the above test is significantly greater than alpha (0.05), we can reject our null hypothesis and accept our alternative hypothesis i.e. the average burning times of the two flare types are not equal.
+
+***
+
